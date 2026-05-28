@@ -53,6 +53,10 @@ const eslintConfig = defineConfig([
     "coverage/**",
     "playwright-report/**",
     "test-results/**",
+    // PM2 config: CommonJS por convención (PM2 lo lee con require). El
+    // package.json no tiene "type":"module" así que .js es CJS — usar
+    // require() es válido para Node, pero eslint-config-next lo prohíbe.
+    "ecosystem.config.js",
   ]),
 ]);
 

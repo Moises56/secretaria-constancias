@@ -46,3 +46,14 @@
 - Sesiones JWT no invalidables remotamente excepto vía `securityStamp` (cambio de rol, reset de password, desactivación), con hasta 60s de retardo por el cache.
 - AuditLog crece sin límite — considerar rotación/archivado tras 12 meses.
 - CSP con `'unsafe-inline'` en `script-src`/`style-src`: relajación estándar para Next sin nonce + Tailwind/CSS-in-JS (recharts/GSAP). `'unsafe-eval'` SOLO en dev (Turbopack HMR); el build de producción no lo incluye.
+
+## Confianza en el reverse proxy de AMDC (FASE 12)
+
+En producción la app corre HTTP en `192.168.200.82:3010` detrás del servidor `proxyinverso` (nginx) que termina TLS y rewrite headers. La app **confía** en:
+
+- `X-Forwarded-Proto: https` — vía `AUTH_TRUST_HOST=true`. Sin esto Auth.js no marca la cookie de sesión como `Secure` y el login no persiste tras submit (rebota a `/login`).
+- `X-Forwarded-For[0]` y `X-Real-IP` — vía `src/server/lib/get-client-ip.ts`. La primera IP de XFF es el cliente real según la convención del proxy. Esto es lo que registra el AuditLog y lo que usa el rate-limit por IP (login 5/15min, verify 30/min).
+
+**Es seguro confiar en estos headers** porque el proxy AMDC es la única ruta de ingreso a la app (acceso de red restringido al host) y siempre los reescribe — cualquier valor que un atacante intente spoofear desde fuera queda sobrescrito por el proxy antes de llegar al servidor. **En una topología sin proxy de confianza** (acceso directo a `:3010`), esto permitiría suplantación de IP y debe deshabilitarse / cambiar la estrategia.
+
+Resumen operativo: si algún día se exponen los `:3010` directamente al público sin pasar por el proxy AMDC, hay que (a) reescribir `getClientIp` para usar la IP del socket o (b) recuperar el header `X-Forwarded-For` solo desde IPs de proxies whitelistados.
