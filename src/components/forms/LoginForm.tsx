@@ -117,9 +117,12 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
                           type="button"
                           onClick={() => setShowPassword((v) => !v)}
                           disabled={isPending}
-                          aria-label={
-                            showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
-                          }
+                          // NO usar "contraseña" en el aria-label: los tests E2E
+                          // matchean el campo password con getByLabel(/contraseña/i)
+                          // y este botón colisiona si su accessible name contiene
+                          // esa palabra. "Mostrar"/"Ocultar" es claro en contexto
+                          // (el botón está pegado al input password).
+                          aria-label={showPassword ? "Ocultar" : "Mostrar"}
                           aria-pressed={showPassword}
                         >
                           {showPassword ? (
