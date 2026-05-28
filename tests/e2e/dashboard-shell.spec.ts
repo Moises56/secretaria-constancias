@@ -26,7 +26,8 @@ test.describe("Dashboard shell", () => {
 
   test("dashboard muestra welcome y stat cards placeholder", async ({ page }) => {
     await login(page, ADMIN_USERNAME, ADMIN_PASSWORD);
-    await expect(page.getByRole("heading", { name: /buenas,/i })).toBeVisible();
+    // Saludo dinámico: "Buenos días" / "Buenas tardes" / "Buenas noches"
+    await expect(page.getByRole("heading", { name: /buen[oa]s (días|tardes|noches),/i })).toBeVisible();
     const cards = page.getByTestId("stat-card");
     await expect(cards).toHaveCount(4);
   });

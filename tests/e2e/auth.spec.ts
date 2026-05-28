@@ -33,7 +33,8 @@ test.describe("Autenticación", () => {
   test("login exitoso con admin del seed redirige a /", async ({ page }) => {
     await fillLogin(page, ADMIN_USERNAME, ADMIN_PASSWORD);
     await expect(page).toHaveURL("/");
-    await expect(page.getByRole("heading", { name: /buenas,/i })).toBeVisible();
+    // Saludo dinámico: "Buenos días" / "Buenas tardes" / "Buenas noches"
+    await expect(page.getByRole("heading", { name: /buen[oa]s (días|tardes|noches),/i })).toBeVisible();
     // El nombre del usuario aparece en la sidebar (user menu)
     await expect(page.getByText("Administrador del Sistema")).toBeVisible();
   });
