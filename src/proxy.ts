@@ -34,5 +34,7 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/((?!api/auth|_next/static|_next/image|favicon.ico|.*\\..*).*)"],
+  // Excluye /api/auth/* (lo maneja next-auth) y /api/health (lo consulta
+  // el proxy AMDC + PM2 sin sesión — FASE 12), además de los estáticos.
+  matcher: ["/((?!api/auth|api/health|_next/static|_next/image|favicon.ico|.*\\..*).*)"],
 };

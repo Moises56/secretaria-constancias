@@ -57,6 +57,16 @@ test.describe("Seguridad — headers y CSP", () => {
     await cleanupTestUsers();
   });
 
+  test("/api/health responde 200 sin autenticación", async ({ page }) => {
+    // El proxy AMDC y PM2 lo consultan sin sesión. El matcher de proxy.ts
+    // lo excluye y el endpoint sólo verifica que la app puede llegar a la BD.
+    const res = await page.request.get("/api/health");
+    expect(res.status()).toBe(200);
+    const body = (await res.json()) as { status: string; timestamp: string };
+    expect(body.status).toBe("ok");
+    expect(body.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+  });
+
   test("CSP presente y estricta en página pública", async ({ page }) => {
     const res = await page.goto("/login");
     const csp = res?.headers()["content-security-policy"] ?? "";
