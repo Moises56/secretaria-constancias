@@ -7,9 +7,11 @@
 //    futuro se migra rate-limit a Redis (hay `siclopr_redis` en el
 //    servidor) se puede subir instances.
 //  - max_memory_restart: 768M (recharts + @react-pdf son pesados).
-//  - script: node_modules/.bin/next + args: "start -p 3010" — más
-//    portable que un path absoluto a node y respeta la versión del
-//    binario que la app tiene en sus dependencias.
+//  - script: node_modules/next/dist/bin/next — apunta directo al JS
+//    real (#!/usr/bin/env node). NO usar node_modules/.bin/next: en
+//    Linux es un wrapper sh y PM2 lo invoca como módulo Node →
+//    SyntaxError al leer la sintaxis bash. El JS bajo dist/bin/ es la
+//    forma estable que respeta la versión del binario empaquetado.
 //  - El parser de .env.production replica el patrón usado en otras apps
 //    AMDC (Despacho). Permite valores con/sin comillas. NO usa dotenv
 //    para no requerir esa dependencia en runtime de PM2.
@@ -48,7 +50,7 @@ module.exports = {
   apps: [
     {
       name: "secretaria-constancias-3010",
-      script: "node_modules/.bin/next",
+      script: "node_modules/next/dist/bin/next",
       args: "start -p 3010",
       cwd: "/home/amdcadmin/AmdcFactProyect/Constancias",
       instances: 1,
