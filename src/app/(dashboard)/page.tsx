@@ -9,6 +9,7 @@ import { EmptyDashboardState } from "@/components/dashboard/EmptyDashboardState"
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { StatCardsGrid } from "@/components/dashboard/StatCardsGrid";
+import { greetingForHour } from "@/lib/utils/greeting";
 import {
   PRESET_LABEL,
   parseStatsRangeParams,
@@ -66,7 +67,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
           Panel principal
         </p>
         <h1 className="font-display text-foreground text-3xl leading-tight font-semibold sm:text-4xl">
-          Buenas, {firstName(session.user.fullName)}.
+          {greetingForHour()}, {firstName(session.user.fullName)}.
         </h1>
         <p className="text-muted-foreground mt-1.5 text-sm">
           Resumen de actividad de la Secretaría Municipal del Distrito Central.

@@ -104,36 +104,39 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Contraseña</FormLabel>
-                  <FormControl>
-                    <InputGroup>
+                  {/* FormControl (Radix Slot) clona id/aria-describedby al
+                      direct child. InputGroup queda AFUERA y FormControl
+                      envuelve al InputGroupInput para que el id llegue al
+                      <input> real y el label-input binding no se rompa. */}
+                  <InputGroup>
+                    <FormControl>
                       <InputGroupInput
                         type={showPassword ? "text" : "password"}
                         autoComplete="current-password"
                         disabled={isPending}
                         {...field}
                       />
-                      <InputGroupAddon align="inline-end">
-                        <InputGroupButton
-                          type="button"
-                          onClick={() => setShowPassword((v) => !v)}
-                          disabled={isPending}
-                          // NO usar "contraseña" en el aria-label: los tests E2E
-                          // matchean el campo password con getByLabel(/contraseña/i)
-                          // y este botón colisiona si su accessible name contiene
-                          // esa palabra. "Mostrar"/"Ocultar" es claro en contexto
-                          // (el botón está pegado al input password).
-                          aria-label={showPassword ? "Ocultar" : "Mostrar"}
-                          aria-pressed={showPassword}
-                        >
-                          {showPassword ? (
-                            <EyeOff className="size-4" aria-hidden />
-                          ) : (
-                            <Eye className="size-4" aria-hidden />
-                          )}
-                        </InputGroupButton>
-                      </InputGroupAddon>
-                    </InputGroup>
-                  </FormControl>
+                    </FormControl>
+                    <InputGroupAddon align="inline-end">
+                      <InputGroupButton
+                        type="button"
+                        onClick={() => setShowPassword((v) => !v)}
+                        disabled={isPending}
+                        // NO usar "contraseña" en el aria-label: los tests E2E
+                        // matchean el campo password con getByLabel(/contraseña/i)
+                        // y este botón colisiona si su accessible name contiene
+                        // esa palabra.
+                        aria-label={showPassword ? "Ocultar" : "Mostrar"}
+                        aria-pressed={showPassword}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="size-4" aria-hidden />
+                        ) : (
+                          <Eye className="size-4" aria-hidden />
+                        )}
+                      </InputGroupButton>
+                    </InputGroupAddon>
+                  </InputGroup>
                   <FormMessage />
                 </FormItem>
               )}
