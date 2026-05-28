@@ -34,6 +34,11 @@ export const metadata: Metadata = {
   },
   description:
     "Sistema interno de la Secretaría Municipal del Distrito Central para emitir Constancias de Vecindad.",
+  // Usa el escudo institucional como favicon, sobreescribiendo el
+  // `src/app/favicon.ico` default que Next 16 autodetecta.
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({

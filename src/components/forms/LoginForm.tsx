@@ -1,12 +1,12 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LogIn } from "lucide-react";
+import { Eye, EyeOff, LogIn } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -21,6 +21,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import { loginSchema, type LoginInput } from "@/lib/validators/auth";
 import { loginAction } from "@/server/actions/auth.actions";
 
@@ -31,6 +37,7 @@ interface LoginFormProps {
 export function LoginForm({ callbackUrl }: LoginFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -98,12 +105,31 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
                 <FormItem>
                   <FormLabel>Contraseña</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      autoComplete="current-password"
-                      disabled={isPending}
-                      {...field}
-                    />
+                    <InputGroup>
+                      <InputGroupInput
+                        type={showPassword ? "text" : "password"}
+                        autoComplete="current-password"
+                        disabled={isPending}
+                        {...field}
+                      />
+                      <InputGroupAddon align="inline-end">
+                        <InputGroupButton
+                          type="button"
+                          onClick={() => setShowPassword((v) => !v)}
+                          disabled={isPending}
+                          aria-label={
+                            showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
+                          }
+                          aria-pressed={showPassword}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="size-4" aria-hidden />
+                          ) : (
+                            <Eye className="size-4" aria-hidden />
+                          )}
+                        </InputGroupButton>
+                      </InputGroupAddon>
+                    </InputGroup>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

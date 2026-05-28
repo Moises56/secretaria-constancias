@@ -1,16 +1,22 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 
 import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, UserPlus } from "lucide-react";
+import { Eye, EyeOff, Loader2, UserPlus } from "lucide-react";
 import { type Resolver, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
 import {
   USER_ROLES,
@@ -50,6 +56,7 @@ const ROLE_LABEL: Record<UserRoleLiteral, string> = {
 export function UserForm({ mode, user }: UserFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [showPassword, setShowPassword] = useState(false);
   const isEdit = mode === "edit";
 
   const form = useForm<FormValues>({
@@ -174,15 +181,32 @@ export function UserForm({ mode, user }: UserFormProps) {
       {!isEdit && (
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="password">Contraseña inicial</Label>
-          <Input
-            id="password"
-            type="password"
-            autoComplete="new-password"
-            placeholder="Mínimo 12 caracteres"
-            disabled={isPending}
-            data-testid="user-password"
-            {...form.register("password")}
-          />
+          <InputGroup>
+            <InputGroupInput
+              id="password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
+              placeholder="Mínimo 12 caracteres"
+              disabled={isPending}
+              data-testid="user-password"
+              {...form.register("password")}
+            />
+            <InputGroupAddon align="inline-end">
+              <InputGroupButton
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                disabled={isPending}
+                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                aria-pressed={showPassword}
+              >
+                {showPassword ? (
+                  <EyeOff className="size-4" aria-hidden />
+                ) : (
+                  <Eye className="size-4" aria-hidden />
+                )}
+              </InputGroupButton>
+            </InputGroupAddon>
+          </InputGroup>
           {errors.password?.message ? (
             <p className="text-destructive text-xs">{String(errors.password.message)}</p>
           ) : (
