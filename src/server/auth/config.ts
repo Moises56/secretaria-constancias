@@ -131,6 +131,18 @@ export const authConfig: NextAuthConfig = {
       },
     }),
   ],
+  logger: {
+    // `CredentialsSignin` lo lanzamos en authorize() para TODOS los modos
+    // de falla (no-user, inactive, bad-password, rate-limited) — es flujo
+    // normal de "login inválido", no un error real del sistema. La causa
+    // específica ya queda en AuditLog (LOGIN_FAILED / LOGIN_BLOCKED) con
+    // IP, user-agent y razón. Silenciar evita ruido en err.log; el resto
+    // de errores de Auth.js siguen pasando.
+    error(error) {
+      if (error instanceof CredentialsSignin) return;
+      console.error(error);
+    },
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
