@@ -19,6 +19,7 @@ test.describe.configure({ mode: "serial" });
 // DNI tag para la constancia que crea este spec (limpieza idempotente).
 const SEC_DNI = "0801-1990-99999";
 let pdfConstanciaId: string;
+let pdfConstanciaToken: string;
 
 test.describe("Seguridad — headers y CSP", () => {
   test.beforeAll(async () => {
@@ -43,11 +44,15 @@ test.describe("Seguridad — headers y CSP", () => {
         verificationToken: `sec-pdf-${Date.now()}`.padEnd(64, "0"),
         issuedById: admin.id,
       },
-      select: { id: true },
+      select: { id: true, verificationToken: true },
     });
     pdfConstanciaId = c.id;
+    pdfConstanciaToken = c.verificationToken;
   });
   test.afterAll(async () => {
+    // El AuditLog no tiene FK a Constancia (entityId es plain string opcional),
+    // así que hay que borrar los logs de este test antes (o quedan huérfanos).
+    await prisma.auditLog.deleteMany({ where: { entityId: pdfConstanciaId } });
     await prisma.constancia.deleteMany({ where: { applicantIdNumber: SEC_DNI } });
     await cleanupTestUsers();
   });
@@ -147,6 +152,31 @@ test.describe("Seguridad — headers y CSP", () => {
       return false;
     }, session!.value);
     expect(tokenLeaked).toBe(false);
+  });
+
+  test("getClientIp lee X-Forwarded-For — AuditLog registra IP del cliente, no del proxy", async ({
+    page,
+  }) => {
+    // El reverse proxy de AMDC inserta la IP real del cliente como primer
+    // salto en X-Forwarded-For (formato: "cliente, hop1, hop2"). Verificamos
+    // que `getClientIp` la toma — sin esto el AuditLog registraría siempre
+    // la IP interna del proxy (192.168.200.x) y el rate-limit por IP sería
+    // global a todos los usuarios.
+    const SPOOF_IP = "203.0.113.45";
+    const res = await page.request.get(`/v/${pdfConstanciaToken}`, {
+      headers: { "x-forwarded-for": `${SPOOF_IP}, 192.168.200.5, 10.0.0.1` },
+    });
+    expect(res.status()).toBe(200);
+
+    const log = await prisma.auditLog.findFirst({
+      where: {
+        action: "CONSTANCIA_VERIFIED",
+        entityId: pdfConstanciaId,
+        ipAddress: SPOOF_IP,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    expect(log, `AuditLog debe registrar ${SPOOF_IP} (primer salto de XFF)`).toBeTruthy();
   });
 
   test("rate limit de exports: bloquea con 429 tras superar la cuota", async ({ page }) => {

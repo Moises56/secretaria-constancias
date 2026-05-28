@@ -5,6 +5,7 @@ import { RateLimitedCard } from "@/components/verification/RateLimitedCard";
 import { VerificationCard } from "@/components/verification/VerificationCard";
 import { prisma } from "@/server/db";
 import { recordConstanciaVerified } from "@/server/lib/audit";
+import { getClientIpFromHeaders } from "@/server/lib/get-client-ip";
 import { checkVerifyRateLimit } from "@/server/lib/rate-limit";
 
 import type { Metadata } from "next";
@@ -25,8 +26,7 @@ interface PageProps {
 }
 
 function extractClientInfo(h: Headers) {
-  const forwarded = h.get("x-forwarded-for");
-  const ipAddress = forwarded?.split(",")[0]?.trim() ?? "unknown";
+  const ipAddress = getClientIpFromHeaders(h);
   const userAgent = h.get("user-agent") ?? "unknown";
   return { ipAddress, userAgent };
 }

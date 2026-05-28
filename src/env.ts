@@ -16,6 +16,21 @@ const serverSchema = z.object({
     .string()
     .min(32, "AUTH_SECRET debe tener al menos 32 caracteres (usa openssl rand -base64 32)"),
   AUTH_URL: z.string().url("AUTH_URL debe ser una URL válida"),
+  // OBLIGATORIO en producción detrás del reverse proxy de AMDC: hace que
+  // Auth.js confíe en X-Forwarded-Proto y setee la cookie como Secure. Sin
+  // esto, el login parece funcionar pero la sesión no persiste (FASE 12).
+  AUTH_TRUST_HOST: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((v) => v === "true"),
+
+  // Postgres en Docker dedicado (FASE 12). Los usa ecosystem.config.js +
+  // scripts/deploy.sh para inicializar el contenedor; la app misma usa
+  // DATABASE_URL y no necesita estos individualmente, pero los validamos
+  // para detectar omisiones en .env.production antes del deploy.
+  POSTGRES_USER: z.string().min(1).optional(),
+  POSTGRES_PASSWORD: z.string().min(1).optional(),
+  POSTGRES_DB: z.string().min(1).optional(),
 
   VERIFICATION_HMAC_SECRET: z
     .string()

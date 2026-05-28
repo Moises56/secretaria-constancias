@@ -9,6 +9,7 @@ import { z } from "zod";
 import { isSecurityStampValid } from "@/server/auth/security-stamp";
 import { prisma } from "@/server/db";
 import { recordLogin, recordLoginBlocked, recordLoginFailed } from "@/server/lib/audit";
+import { getClientIpFromHeaders } from "@/server/lib/get-client-ip";
 import { loginRateLimiter } from "@/server/lib/rate-limit";
 
 const credentialsSchema = z.object({
@@ -26,8 +27,7 @@ class InvalidCredentialsError extends CredentialsSignin {
 }
 
 function extractClientInfo(request: Request) {
-  const forwarded = request.headers.get("x-forwarded-for");
-  const ipAddress = forwarded?.split(",")[0]?.trim() ?? null;
+  const ipAddress = getClientIpFromHeaders(request.headers);
   const userAgent = request.headers.get("user-agent") ?? null;
   return { ipAddress, userAgent };
 }
