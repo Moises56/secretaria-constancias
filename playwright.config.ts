@@ -28,7 +28,10 @@ export default defineConfig({
     { name: "mobile-chrome", use: { ...devices["Pixel 7"] } },
   ],
   webServer: {
-    command: "pnpm dev",
+    // CI usa pnpm start (build pre-compilado) — evita el JIT cold-compile de
+    // Turbopack en el primer hit a rutas como /api/audit/export o /login que
+    // hacía timeout a tests de E2E. Local sigue con pnpm dev para HMR.
+    command: process.env.CI ? "pnpm start" : "pnpm dev",
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
