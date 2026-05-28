@@ -35,7 +35,7 @@ export function AppShell({ user, children }: AppShellProps) {
           <main
             id="main-content"
             tabIndex={-1}
-            className="bg-background flex-1 overflow-y-auto px-4 py-6 outline-none lg:px-8 lg:py-8"
+            className="bg-background flex-1 overflow-x-hidden overflow-y-auto px-4 py-6 outline-none lg:px-8 lg:py-8"
           >
             {children}
           </main>
