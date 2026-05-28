@@ -1,0 +1,130 @@
+// Sistema de Constancias de Vecindad — Secretaría Municipal del Distrito Central
+// Documentación: ../docs/plan-constancias-v2.md
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Prisma 7: la URL ya no va aquí. Vive en `prisma.config.ts` (datasource.url)
+// para los comandos de CLI/Migrate, y se pasa al PrismaClient runtime vía
+// driver adapter (`@prisma/adapter-pg`) — ver src/server/db.ts.
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  SECRETARY
+  VIEWER
+}
+
+enum ConstanciaType {
+  CVD // Vecindad — residencia pasada (verbo "fue")
+  CVP // Vecindad — residencia vigente (verbo "es")
+  CVE // Vecindad — uso en el extranjero (verbo "es" + cláusula internacional)
+}
+
+enum ConstanciaStatus {
+  ACTIVE
+  ANNULLED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  username      String    @unique
+  email         String    @unique
+  passwordHash  String
+  fullName      String
+  role          Role      @default(SECRETARY)
+  isActive      Boolean   @default(true)
+  lastLoginAt   DateTime?
+  // securityStamp se actualiza al cambiar rol/password/desactivar; invalida sesiones JWT en vuelo.
+  securityStamp DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  constancias Constancia[] @relation("CreatedBy")
+  annulled    Constancia[] @relation("AnnulledBy")
+  auditLogs   AuditLog[]
+}
+
+model Signer {
+  id              String           @id @default(cuid())
+  fullName        String
+  titleLine       String
+  isActive        Boolean          @default(true)
+  defaultForTypes ConstanciaType[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model Constancia {
+  id String @id @default(cuid())
+
+  // Folio: contador independiente por (type, year). Ver server/services/folio.service.ts.
+  type        ConstanciaType
+  folioNumber Int
+  folioYear   Int
+  // Display interno: "CVE-2366-2026". El PDF imprime solo "{folioNumber}-{folioYear}".
+  folio       String
+
+  status ConstanciaStatus @default(ACTIVE)
+
+  applicantFullName String
+  applicantIdNumber String
+
+  // Trazabilidad opcional del papel membretado (ej. "SM-2348").
+  paperSerial String?
+
+  // Snapshot INMUTABLE del firmante al momento de emisión.
+  // signerIdAtIssue es solo referencia informativa — NO es una FK con cascade.
+  signerName      String
+  signerTitleLine String
+  signerIdAtIssue String
+
+  verificationToken String @unique
+
+  issuedAt   DateTime @default(now())
+  issuedById String
+  issuedBy   User     @relation("CreatedBy", fields: [issuedById], references: [id])
+
+  annulledAt     DateTime?
+  annulledReason String?
+  annulledById   String?
+  annulledBy     User?     @relation("AnnulledBy", fields: [annulledById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([type, folioYear, folioNumber])
+  @@index([type, issuedAt])
+  @@index([applicantIdNumber])
+  @@index([status])
+  @@index([issuedById])
+}
+
+model FolioSequence {
+  id         String         @id @default(cuid())
+  type       ConstanciaType
+  year       Int
+  lastNumber Int            @default(0)
+
+  @@unique([type, year])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  entity    String?
+  entityId  String?
+  metadata  Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}

@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: constancias-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: constancias
+      POSTGRES_PASSWORD: constancias
+      POSTGRES_DB: constancias
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - constancias_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U constancias -d constancias"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  constancias_db_data:
+    name: constancias_db_data

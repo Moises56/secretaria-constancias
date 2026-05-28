@@ -1,0 +1,43 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`renderConstanciaText > CVD usa 'fue' y NO incluye la cláusula internacional 1`] = `
+"CONSTANCIA DE VECINDAD N. 215-2026
+
+Por medio de la presente se HACE CONSTAR: Que, de conformidad a los documentos presentados ante esta Alcaldía Municipal, el (la) ciudadano (a) HÉCTOR MIGUEL ZELAYA GONZÁLEZ, con Documento Nacional de Identificación No. 0801-1942-02078, fue vecino (a) de este Municipio del Distrito Central, departamento de Francisco Morazán.
+
+VIGENCIA POR SEIS (6) MESES
+
+Y para los fines que el interesado convenga, se le extiende la presente en la ciudad de Tegucigalpa, Municipio del Distrito Central, departamento de Francisco Morazán, a los siete días del mes de mayo del año dos mil veintiséis.
+
+
+Diana Alejandra Cruz Rivera
+Acuerdo de Delegación N.001 AMDC-SM-2026"
+`;
+
+exports[`renderConstanciaText > CVE incluye la cláusula internacional ANTES del punto final 1`] = `
+"CONSTANCIA DE VECINDAD N. 2366-2026
+
+Por medio de la presente se HACE CONSTAR: Que, de conformidad a los documentos presentados ante esta Alcaldía Municipal, el (la) ciudadano (a) ÁNGELA JUDITH GARCÍA NOLASCO, con Documento Nacional de Identificación No. 0801-1997-11539, es vecino (a) de este Municipio del Distrito Central, departamento de Francisco Morazán, República de Honduras, Centroamérica.
+
+VIGENCIA POR SEIS (6) MESES
+
+Y para los fines que el interesado convenga, se le extiende la presente en la ciudad de Tegucigalpa, Municipio del Distrito Central, departamento de Francisco Morazán, a los veinte días del mes de mayo del año dos mil veintiséis.
+
+
+César Antonio Pinto Pacheco
+Secretario Municipal del Distrito Central"
+`;
+
+exports[`renderConstanciaText > CVP usa 'es' sin cláusula internacional 1`] = `
+"CONSTANCIA DE VECINDAD N. 2396-2026
+
+Por medio de la presente se HACE CONSTAR: Que, de conformidad a los documentos presentados ante esta Alcaldía Municipal, el (la) ciudadano (a) MARÍA FERNANDA LÓPEZ RODRÍGUEZ, con Documento Nacional de Identificación No. 0801-1990-12345, es vecino (a) de este Municipio del Distrito Central, departamento de Francisco Morazán.
+
+VIGENCIA POR SEIS (6) MESES
+
+Y para los fines que el interesado convenga, se le extiende la presente en la ciudad de Tegucigalpa, Municipio del Distrito Central, departamento de Francisco Morazán, a los veintiuno días del mes de mayo del año dos mil veintiséis.
+
+
+Diana Alejandra Cruz Rivera
+Acuerdo de Delegación N.001 AMDC-SM-2026"
+`;
