@@ -30,6 +30,12 @@ interface Entry {
  */
 export class InMemoryRateLimiter implements RateLimiter {
   private readonly store = new Map<string, Entry>();
+  // Barrido amortizado: cada 1024 escrituras limpiamos entradas expiradas.
+  // Evita que el Map crezca monotónicamente con IPs únicas (cada IP que llegue
+  // una sola vez deja una Entry hasta que se reuse la misma key, lo cual nunca
+  // pasa con tráfico real). NO usamos setInterval para no mantener el event
+  // loop vivo en flows de tear-down (tests).
+  private writeCount = 0;
 
   constructor(
     private readonly limit: number,
@@ -38,6 +44,13 @@ export class InMemoryRateLimiter implements RateLimiter {
 
   async check(key: string): Promise<RateLimitResult> {
     const now = Date.now();
+
+    if ((++this.writeCount & 1023) === 0) {
+      for (const [k, v] of this.store) {
+        if (v.expiresAt <= now) this.store.delete(k);
+      }
+    }
+
     const existing = this.store.get(key);
 
     if (!existing || existing.expiresAt <= now) {
