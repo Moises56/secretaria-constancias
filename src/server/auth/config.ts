@@ -32,7 +32,15 @@ function extractClientInfo(request: Request) {
   return { ipAddress, userAgent };
 }
 
-const isProd = process.env.NODE_ENV === "production";
+// El prefijo `__Secure-` y el flag `secure:` se derivan del esquema de
+// AUTH_URL — NO de NODE_ENV. Next.js hardcodea `process.env.NODE_ENV =
+// "production"` en el bundle durante `next build` (ver
+// node_modules/next/dist/build/define-env.js), así que `isProd` por
+// NODE_ENV es siempre true en builds, incluido el de CI sobre HTTP, lo
+// que hace que el browser rechace la cookie `__Secure-` y rompa el login.
+// AUTH_URL refleja el esquema REAL del cliente (HTTPS detrás del reverse
+// proxy de AMDC; HTTP local/CI).
+const isHttps = (process.env.AUTH_URL ?? "").startsWith("https://");
 
 export const authConfig: NextAuthConfig = {
   session: {
@@ -41,10 +49,10 @@ export const authConfig: NextAuthConfig = {
   },
   cookies: {
     sessionToken: {
-      name: isProd ? "__Secure-auth.session-token" : "auth.session-token",
+      name: isHttps ? "__Secure-auth.session-token" : "auth.session-token",
       options: {
         httpOnly: true,
-        secure: isProd,
+        secure: isHttps,
         sameSite: "lax",
         path: "/",
       },
