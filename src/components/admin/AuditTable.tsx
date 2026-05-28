@@ -40,7 +40,7 @@ export function AuditTable({ items, hasFiltersActive }: AuditTableProps) {
 
   return (
     <>
-      <div className="border-border bg-card overflow-x-auto rounded-lg border">
+      <div className="border-border bg-card w-full max-w-full overflow-x-auto rounded-lg border">
         <table className="w-full text-sm">
           <thead className="bg-muted/40 border-border border-b">
             <tr className="text-muted-foreground text-left text-[0.65rem] font-medium tracking-[0.14em] uppercase">
