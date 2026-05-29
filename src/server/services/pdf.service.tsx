@@ -18,27 +18,27 @@ const styles = StyleSheet.create({
     paddingBottom: inches(env.PDF_BOTTOM_MARGIN_INCHES),
     paddingLeft: inches(env.PDF_LEFT_MARGIN_INCHES),
     paddingRight: inches(env.PDF_RIGHT_MARGIN_INCHES),
-    fontFamily: "Times-Roman",
+    fontFamily: "Helvetica",
     fontSize: 12,
     lineHeight: 1.6,
   },
   title: {
     textAlign: "center",
-    fontFamily: "Times-Bold",
+    fontFamily: "Helvetica-Bold",
     fontSize: 13,
     letterSpacing: 0.5,
   },
   body: { textAlign: "justify" },
-  bold: { fontFamily: "Times-Bold" },
+  bold: { fontFamily: "Helvetica-Bold" },
   vigencia: {
     textAlign: "center",
-    fontFamily: "Times-Bold",
+    fontFamily: "Helvetica-Bold",
     marginTop: 18,
     marginBottom: 18,
   },
   signerName: {
     textAlign: "center",
-    fontFamily: "Times-Bold",
+    fontFamily: "Helvetica-Bold",
     // ~1.67 cm de aire entre el último párrafo del cuerpo y el nombre
     // del firmante: en el impreso va un sello físico de la Secretaría
     // sobre el papel membretado y antes (marginTop:64) lo tapaba.
