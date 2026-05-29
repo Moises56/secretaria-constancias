@@ -4,7 +4,7 @@ import { CircleCheck, CircleX } from "lucide-react";
 import { DataRow } from "@/components/verification/DataRow";
 import { TYPE_LABEL } from "@/lib/constancia-template";
 import { cn } from "@/lib/utils";
-import { formatDateHN } from "@/lib/utils/format";
+import { displayFolio, formatDateHN } from "@/lib/utils/format";
 import { maskDni } from "@/lib/utils/mask-id";
 
 interface VerificationCardProps {
@@ -82,7 +82,7 @@ export function VerificationCard({ constancia }: VerificationCardProps) {
       >
         <DataRow
           label="Número de constancia"
-          value={`${constancia.folioNumber}-${constancia.folioYear}`}
+          value={displayFolio(constancia)}
           mono
         />
         <DataRow label="Tipo" value={TYPE_LABEL[constancia.type]} />

@@ -6,6 +6,7 @@ import { Document, Image, Page, StyleSheet, Text, View, renderToBuffer } from "@
 import { env } from "@/env";
 import { TYPE_CONFIG } from "@/lib/constancia-template";
 import { dateInWords } from "@/lib/date-words";
+import { displayFolio } from "@/lib/utils/format";
 import { sanitizeForPdf } from "@/lib/utils/sanitize";
 import { generateQrBuffer } from "@/server/services/qr.service";
 
@@ -38,7 +39,10 @@ const styles = StyleSheet.create({
   signerName: {
     textAlign: "center",
     fontFamily: "Times-Bold",
-    marginTop: 64,
+    // ~1.67 cm de aire entre el último párrafo del cuerpo y el nombre
+    // del firmante: en el impreso va un sello físico de la Secretaría
+    // sobre el papel membretado y antes (marginTop:64) lo tapaba.
+    marginTop: 120,
   },
   signerTitle: {
     textAlign: "center",
@@ -77,9 +81,7 @@ function ConstanciaDocument({ c, qrBuffer }: DocumentProps) {
       language="es-HN"
     >
       <Page size="LETTER" style={styles.page}>
-        <Text style={styles.title}>
-          CONSTANCIA DE VECINDAD N. {c.folioNumber}-{c.folioYear}
-        </Text>
+        <Text style={styles.title}>CONSTANCIA DE VECINDAD N. {displayFolio(c)}</Text>
 
         <View style={styles.spacer14} />
 

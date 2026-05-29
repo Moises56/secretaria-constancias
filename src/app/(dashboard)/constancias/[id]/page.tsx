@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TYPE_LABEL } from "@/lib/constancia-template";
-import { formatDateTimeHN } from "@/lib/utils/format";
+import { displayFolio, formatDateTimeHN } from "@/lib/utils/format";
 import { can } from "@/server/auth/permissions";
 import { requireAuth } from "@/server/auth/require";
 import { prisma } from "@/server/db";
@@ -82,7 +82,7 @@ export default async function ConstanciaDetailPage({ params }: PageProps) {
             data-testid="constancia-folio"
             data-folio
           >
-            {constancia.folioNumber}-{constancia.folioYear}
+            {displayFolio(constancia)}
           </h1>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <Badge variant={TYPE_BADGE[constancia.type]}>{constancia.type}</Badge>

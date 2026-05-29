@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { formatDateHN } from "@/lib/utils/format";
+import { displayFolio, formatDateHN } from "@/lib/utils/format";
 import {
   type ConstanciaSortField,
   type ConstanciaListSearchParams,
@@ -190,7 +190,7 @@ export function ConstanciaListTable({
                   href={`/constancias/${c.id}`}
                   className="text-foreground hover:text-primary font-mono text-sm font-medium tracking-wide"
                 >
-                  {c.folioNumber}-{c.folioYear}
+                  {displayFolio(c)}
                 </Link>
               </td>
               <td className="px-4 py-3">
